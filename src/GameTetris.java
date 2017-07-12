@@ -60,11 +60,53 @@ public class GameTetris {
         new GameTetris().go();
     }
 
-    void go() {
+    void go() {   //setting frame settings and sizes
+        frame = new JFrame(TITLE_OF_PROGRAM);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(FIELD_WIDTH * BLOCK_SIZE + FIELD_DX, FIELD_HEIGHT * BLOCK_SIZE + FIELD_DY);
+        frame.setLocation(START_LOCATION, START_LOCATION);
+        frame.setResizable(false);
+        canvasPanel.setBackground(Color.BLACK);
+
+        frame.addKeyListener(new KeyAdapter() { //listener for pressing keys
+            public void keyPressed(KeyEvent e) {
+                if (!gameOver) {
+                    if (e.getKeyCode() == DOWN) figure.drop();
+                    if (e.getKeyCode() == UP) figure.rotate();
+                    if (e.getKeyCode() == LEFT || e.getKeyCode() == RIGHT) figure.move(e.getKeyCode());
+                }
+                canvasPanel.repaint();
+            }
+        });
+        frame.getContentPane().add(BorderLayout.CENTER, canvasPanel);
+        frame.setVisible(true);
 
     }
 
     class Figure {
 
+        void drop() {
+
+        }
+
+        void move(int code) {
+
+        }
+
+        void rotate() {
+
+        }
+    }
+
+    class Block {
+
+    }
+
+    public class Canvas extends JPanel {
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+
+        }
     }
 }
