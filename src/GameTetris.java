@@ -120,45 +120,48 @@ public class GameTetris {
             }
             createFromShape();
         }
-
         void createFromShape() {
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     if (shape[y][x] == 1) figure.add(new Block(x + this.x, y + this.y));
         }
-
         boolean isTouchGround() {
             for (Block block : figure)
                 if (mine[block.getY() + 1][block.getX()] > 0)
                     return true;
             return false;
         }
-
         boolean isCrossGround() {
             return false;
         }
-
         void leaveOnTheGround() {
             for (Block block : figure) mine[block.getY()][block.getX()] = color;
         }
-
         void stepDown() {
             for (Block block : figure) block.setY(block.getY() + 1);
             y++;
         }
-
         void drop() {
-
+            while (!isTouchGround())
+                stepDown();
         }
-
+        boolean isTouchWall(int direction) {
+            for (Block block : figure) {
+                if (direction == LEFT && (block.getX() == 0 || mine[block.getY()][block.getX() - 1] > 0)) return true;
+                if (direction == RIGHT && (block.getX() == FIELD_WIDTH - 1 || mine[block.getY()][block.getX() + 1] > 0)) return true;
+            }
+            return false;
+        }
         void move(int direction) {
-
+            if (!isTouchWall(direction)) {
+                int dx = direction - 38;
+                for (Block block : figure) block.setX(block.getX() + dx);
+                x += dx;
+            }
         }
-
         void rotate() {
 
         }
-
         void paint(Graphics g) {  //painting each block in figure
             for (Block block : figure) block.paint(g,color);
         }
@@ -171,18 +174,14 @@ public class GameTetris {
             setX(x);
             setY(y);
         }
-
         void setX(int x) {
             this.x = x;
         }
-
         void setY(int y) {
             this.y = y;
         }
-
         int getX() {return x;}
         int getY() {return y;}
-
         void paint(Graphics g, int color){
             g.setColor(new Color(color));
             g.drawRoundRect(x * BLOCK_SIZE + 1, y * BLOCK_SIZE+1, BLOCK_SIZE - 2, BLOCK_SIZE - 2, ARC_RADIUS, ARC_RADIUS);
