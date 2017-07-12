@@ -159,8 +159,40 @@ public class GameTetris {
                 x += dx;
             }
         }
+        boolean isWrongPosition() {
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                    if (shape[y][x] == 1) {
+                        if (y + this.y < 0) return true;
+                        if (x + this.x < 0 || x + this.x > FIELD_WIDTH - 1) return true;
+                        if (mine[y + this.y][x + this.x] > 0) return true;
+                    }
+            return false;
+        }
+        void rotateShape(int direction) {
+            for (int i = 0; i < size/2; i++)
+                for (int j = i; j < size-1-i; j++)
+                    if (direction == RIGHT) { // clockwise
+                        int tmp = shape[size-1-j][i];
+                        shape[size-1-j][i] = shape[size-1-i][size-1-j];
+                        shape[size-1-i][size-1-j] = shape[j][size-1-i];
+                        shape[j][size-1-i] = shape[i][j];
+                        shape[i][j] = tmp;
+                    } else { // counterclockwise
+                        int tmp = shape[i][j];
+                        shape[i][j] = shape[j][size-1-i];
+                        shape[j][size-1-i] = shape[size-1-i][size-1-j];
+                        shape[size-1-i][size-1-j] = shape[size-1-j][i];
+                        shape[size-1-j][i] = tmp;
+                    }
+        }
         void rotate() {
-
+            rotateShape(RIGHT);
+            if (!isWrongPosition()) {
+                figure.clear();
+                createFromShape();
+            } else
+                rotateShape(LEFT);
         }
         void paint(Graphics g) {  //painting each block in figure
             for (Block block : figure) block.paint(g,color);
