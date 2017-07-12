@@ -86,7 +86,7 @@ public class GameTetris {
         //main loop
         while (!gameOver) {
             try {
-                Thread.sleep(SHOW_DELAY);
+                Thread.sleep(SHOW_DELAY+200);
             } catch (Exception e) { e.printStackTrace(); }
             canvasPanel.repaint();
             if (figure.isTouchGround()) {
@@ -101,7 +101,22 @@ public class GameTetris {
     }
 
     void checkFilling() {
-
+        int row = FIELD_HEIGHT - 1;
+        int countFillRows = 0;
+        while (row > 0) {
+            int filled = 1;
+            for (int col = 0; col < FIELD_WIDTH; col++)
+                filled *= Integer.signum(mine[row][col]);
+            if (filled > 0) {
+                countFillRows++;
+                for (int i = row; i > 0; i--) System.arraycopy(mine[i-1], 0, mine[i], 0, FIELD_WIDTH);
+            } else
+                row--;
+        }
+        if (countFillRows > 0) {
+            gameScores += SCORES[countFillRows - 1];
+            frame.setTitle(TITLE_OF_PROGRAM + " : " + gameScores);
+        }
     }
 
     class Figure {
@@ -132,6 +147,9 @@ public class GameTetris {
             return false;
         }
         boolean isCrossGround() {
+            for (Block block : figure)
+                if (mine[block.getY()][block.getX()] > 0)
+                    return true;
             return false;
         }
         void leaveOnTheGround() {
