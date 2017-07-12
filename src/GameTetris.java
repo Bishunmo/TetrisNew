@@ -25,12 +25,12 @@ public class GameTetris {
     final int SHOW_DELAY = 350;  //delay for animation
     final int[][][] SHAPES = {
             {{0,0,0,0}, {1,1,1,1}, {0,0,0,0}, {0,0,0,0}, {4, 0x00f0f0}}, // I
-            {{0,0,0,0}, {1,1,1,0}, {0,1,1,0}, {0,0,0,0}, {4, 0xf0f000}}, // O
+            {{0,0,0,0}, {0,1,1,0}, {0,1,1,0}, {0,0,0,0}, {4, 0xf0f000}}, // O
             {{1,0,0,0}, {1,1,1,0}, {0,0,0,0}, {0,0,0,0}, {3, 0x0000f0}}, // J
             {{0,0,1,0}, {1,1,1,0}, {0,0,0,0}, {0,0,0,0}, {3, 0xf0a000}}, // L
             {{0,1,1,0}, {1,1,0,0}, {0,0,0,0}, {0,0,0,0}, {3, 0x00f000}}, // S
-            {{0,1,1,0}, {0,1,0,0}, {0,0,0,0}, {0,0,0,0}, {3, 0xa000f0}}, // T
-            {{1,1,0,0}, {0,1,1,0}, {0,0,0,0}, {0,0,0,0}, {3, 0xf00000}}, // Z
+            {{1,1,1,0}, {0,1,0,0}, {0,0,0,0}, {0,0,0,0}, {3, 0xa000f0}}, // T
+            {{1,1,0,0}, {0,1,1,0}, {0,0,0,0}, {0,0,0,0}, {3, 0xf00000}}  // Z
     };
     final int[] SCORES = {100, 300, 700, 1500};  //for line removal 1/2/3/4
     int gameScores = 0;
@@ -112,9 +112,25 @@ public class GameTetris {
 
         Figure() {
             type = random.nextInt(SHAPES.length);
+            size = SHAPES[type][4][0];
+            color = SHAPES[type][4][1];
+            if (size == 4) y = -1;
+            for (int i = 0; i < size; i++) {  //filling shape
+                System.arraycopy(SHAPES[type][i], 0, shape[i], 0, SHAPES[type][i].length);
+            }
+            createFromShape();
+        }
+
+        void createFromShape() {
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                    if (shape[y][x] == 1) figure.add(new Block(x + this.x, y + this.y));
         }
 
         boolean isTouchGround() {
+            for (Block block : figure)
+                if (mine[block.getY() + 1][block.getX()] > 0)
+                    return true;
             return false;
         }
 
@@ -123,11 +139,12 @@ public class GameTetris {
         }
 
         void leaveOnTheGround() {
-
+            for (Block block : figure) mine[block.getY()][block.getX()] = color;
         }
 
         void stepDown() {
-
+            for (Block block : figure) block.setY(block.getY() + 1);
+            y++;
         }
 
         void drop() {
@@ -140,6 +157,10 @@ public class GameTetris {
 
         void rotate() {
 
+        }
+
+        void paint(Graphics g) {  //painting each block in figure
+            for (Block block : figure) block.paint(g,color);
         }
     }
 
@@ -172,7 +193,13 @@ public class GameTetris {
         @Override
         public void paint(Graphics g) {
             super.paint(g);
-
+            for (int x = 0; x < FIELD_WIDTH; x++)
+                for (int y = 0; y < FIELD_HEIGHT; y++)
+                    if (mine[y][x] > 0) {
+                        g.setColor(new Color(mine[y][x]));
+                        g.fill3DRect(x * BLOCK_SIZE + 1, y * BLOCK_SIZE + 1, BLOCK_SIZE - 1, BLOCK_SIZE - 1, true);
+                    }
+            figure.paint(g);
         }
     }
 }
