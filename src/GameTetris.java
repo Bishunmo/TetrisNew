@@ -81,15 +81,51 @@ public class GameTetris {
         frame.getContentPane().add(BorderLayout.CENTER, canvasPanel);
         frame.setVisible(true);
 
+        Arrays.fill(mine[FIELD_HEIGHT],1);
+
+        //main loop
+        while (!gameOver) {
+            try {
+                Thread.sleep(SHOW_DELAY);
+            } catch (Exception e) { e.printStackTrace(); }
+            canvasPanel.repaint();
+            if (figure.isTouchGround()) {
+                figure.leaveOnTheGround();
+                checkFilling();
+                figure = new Figure();
+                gameOver = figure.isCrossGround();
+            } else {
+                figure.stepDown();
+            }
+        }
+    }
+
+    void checkFilling() {
+
     }
 
     class Figure {
+        boolean isTouchGround() {
+            return false;
+        }
+
+        boolean isCrossGround() {
+            return false;
+        }
+
+        void leaveOnTheGround() {
+
+        }
+
+        void stepDown() {
+
+        }
 
         void drop() {
 
         }
 
-        void move(int code) {
+        void move(int direction) {
 
         }
 
