@@ -78,15 +78,16 @@ public class GameTetris {
                 canvasPanel.repaint();
             }
         });
+
         frame.getContentPane().add(BorderLayout.CENTER, canvasPanel);
         frame.setVisible(true);
 
-        Arrays.fill(mine[FIELD_HEIGHT],1);
+        Arrays.fill(mine[FIELD_HEIGHT],1); //bottom recognition
 
         //main loop
         while (!gameOver) {
             try {
-                Thread.sleep(SHOW_DELAY+200);
+                Thread.sleep(SHOW_DELAY+1000);
             } catch (Exception e) { e.printStackTrace(); }
             canvasPanel.repaint();
             if (figure.isTouchGround()) {
@@ -100,7 +101,7 @@ public class GameTetris {
         }
     }
 
-    void checkFilling() {
+    void checkFilling()  {
         int row = FIELD_HEIGHT - 1;
         int countFillRows = 0;
         while (row > 0) {
@@ -117,7 +118,7 @@ public class GameTetris {
             gameScores += SCORES[countFillRows - 1];
             frame.setTitle(TITLE_OF_PROGRAM + " : " + gameScores);
         }
-    }
+    } // check and delete filled rows
 
     class Figure {
         private ArrayList<Block> figure = new ArrayList<Block>();
@@ -248,7 +249,13 @@ public class GameTetris {
                         g.setColor(new Color(mine[y][x]));
                         g.fill3DRect(x * BLOCK_SIZE + 1, y * BLOCK_SIZE + 1, BLOCK_SIZE - 1, BLOCK_SIZE - 1, true);
                     }
-            figure.paint(g);
+            if (gameOver) {
+                g.setColor(Color.white);
+                for (int y = 0; y < GAME_OVER_MSG.length; y++)
+                    for (int x = 0; x < GAME_OVER_MSG[y].length; x++)
+                        if (GAME_OVER_MSG[y][x] == 1) g.fill3DRect(x*11+18, y*11+160, 10, 10, true);
+            } else
+                figure.paint(g);
         }
     }
 }
